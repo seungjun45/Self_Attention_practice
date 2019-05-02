@@ -14,18 +14,18 @@ import torch.optim as optim
 import torch.utils.data as data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-from model import resnet34, resnet50, Squeeze_N_Extension
+from model import resnet34, resnet50, Bottleneck_Attention_M
 import pdb
 import progressbar
 import numpy as np
-from utils import save_model_SE
+from utils import save_model_BAM
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10/100 Training')
 parser.add_argument('--num_epoch', default=300, type=int, metavar='N',
                     help='number of total epochs to run')
-parser.add_argument('--train_batch', default=3076, type=int, metavar='N',
+parser.add_argument('--train_batch', default=2048, type=int, metavar='N',
                     help='train batchsize')
 parser.add_argument('--test_batch', default=100, type=int, metavar='N',
                     help='test batchsize')
@@ -74,17 +74,34 @@ def main():
         depth_list = [64, 64,64,128,128,128,128,256,256,256,256,256, 256, 512,512,512]
 
 
-    SE_Adapter=Squeeze_N_Extension(model, C_list_for_SE=depth_list)
+    BAM_Adapter=Bottleneck_Attention_M(model, C_list_for_SE=depth_list)
 
     params=list(model.parameters())
 
+    BAM_Adapter.to(device)
 
-    SE_Adapter.to(device)
+    for CA in BAM_Adapter.C_list:
+        CA[0].to(device)
+        CA[1].to(device)
+        params += list(CA[0].parameters())+list(CA[1].parameters())
 
-    for SE in SE_Adapter.C_list:
-        SE[0].to(device)
-        SE[1].to(device)
-        params += list(SE[0].parameters())+list(SE[1].parameters())
+    for bn1 in BAM_Adapter.bn_channel:
+        bn1.to(device)
+        params += list(bn1.parameters())
+
+    for SA in BAM_Adapter.S_list:
+        SA[0].to(device)
+        SA[1].to(device)
+        SA[2].to(device)
+        SA[3].to(device)
+        params += list(SA[0].parameters()) + list(SA[1].parameters()) + list(SA[2].parameters()) + list(SA[3].parameters())
+
+    for bn2 in BAM_Adapter.bn_spatial:
+        bn2[0].to(device)
+        bn2[1].to(device)
+        bn2[2].to(device)
+        params += list(bn2[0].parameters()) + list(bn2[1].parameters()) + list(bn2[2].parameters())
+
 
     optimizer = torch.optim.Adam(params, lr=args.learning_rate)
     criterion = nn.CrossEntropyLoss()
@@ -94,17 +111,17 @@ def main():
     i_train = 0
     total_step=len(trainloader)
 
-    save_directory=os.path.join('save_model','SqueezeExcite',args.model)
+    save_directory=os.path.join('save_model','Bottleneck_Attention_Module',args.model)
     if not os.path.exists(save_directory):
         os.makedirs(save_directory) #saving model directory
 
-    #print(SE_Adapter)
+    #print(BAM_Adapter)
 
     for epoch in range(args.num_epoch):
         for batch_idx, (inputs, targets) in enumerate(trainloader):
             bar.update(i_train)
             inputs, targets = inputs.to(device), targets.to(device)
-            logits=SE_Adapter(inputs, target_layer)
+            logits=BAM_Adapter(inputs, target_layer)
             loss = criterion(logits,targets)
 
             optimizer.zero_grad()
@@ -120,7 +137,7 @@ def main():
 
         model_path = os.path.join(save_directory,'model-{}.pth'.format(epoch))
         prev_model_path = os.path.join(save_directory, 'model-{}.pth'.format(epoch-10))
-        save_model_SE(model_path,SE_Adapter.ResNet,SE_Adapter.C_list,epoch,optimizer=optimizer)
+        save_model_BAM(model_path, BAM_Adapter, epoch, optimizer=optimizer)
         if (os.path.exists(prev_model_path)): # keep track of only 10 recent learned params
             os.remove(prev_model_path)
 

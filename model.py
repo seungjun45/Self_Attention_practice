@@ -295,7 +295,7 @@ class Squeeze_N_Extension(nn.Module):
     def forward(self, x, target_layer):
 
         layer_num = 0
-        linear_transformer_idx=0
+        block_idx=0
         for layer in self.ResNet.children():
             #print('processing layer number : {}'.format(layer_num))
             if layer_num in target_layer:
@@ -303,16 +303,75 @@ class Squeeze_N_Extension(nn.Module):
                     x, identity=sub_layer(x, applySE=True)
                     att_x=torch.reshape(x, (x.size(0), x.size(1), -1))
                     att_x=torch.mean(att_x,2)
-                    att_x=self.C_list[linear_transformer_idx][0](att_x)
+                    att_x=self.C_list[block_idx][0](att_x)
                     att_x=self.relu(att_x)
-                    att_x=self.C_list[linear_transformer_idx][1](att_x)
+                    att_x=self.C_list[block_idx][1](att_x)
                     att_x=self.sigmoid(att_x)
                     att_x=att_x.unsqueeze(2).unsqueeze(3)
                     x=x*att_x
                     x += identity
                     x=self.relu(x)
 
-                    linear_transformer_idx += 1
+                    block_idx += 1
+            else:
+                if(isinstance(layer, nn.Linear)):
+                    x=x.squeeze()
+
+                x=layer(x) # keep forwarding if not target layer to apply self-attention
+            layer_num += 1
+        return x
+
+
+class Bottleneck_Attention_M(nn.Module):
+    def __init__(self, ResNet, reduction_ratio=16, C_list_for_SE=[]):
+        super(Bottleneck_Attention_M,self).__init__()
+
+        self.ResNet=ResNet
+        self.reduction_ratio=reduction_ratio
+        self.relu=nn.ReLU(inplace=True)
+        self.sigmoid=nn.Sigmoid()
+        #self.bn_channel=nn.BatchNorm1d()
+        self.bn_channel=[]
+        self.bn_spatial=[]
+        self.C_list=[] # channel attention
+        self.S_list=[] # spatial attention
+        for featureDepth in C_list_for_SE:
+            reduced_feature_depth=round(featureDepth/reduction_ratio)
+            self.C_list.append( [weight_norm(nn.Linear(featureDepth, reduced_feature_depth ) ), weight_norm(nn.Linear(reduced_feature_depth, featureDepth)) ])
+            self.bn_channel.append(nn.BatchNorm1d(reduced_feature_depth, momentum=0.01))
+            self.S_list.append([nn.Conv2d(featureDepth,reduced_feature_depth,kernel_size=1) , nn.Conv2d(reduced_feature_depth,reduced_feature_depth,kernel_size=3, dilation=4, padding=4),\
+                                nn.Conv2d(reduced_feature_depth,reduced_feature_depth,kernel_size=3, dilation=4, padding=4), nn.Conv2d(reduced_feature_depth,1,kernel_size=1)])
+            self.bn_spatial.append([nn.BatchNorm2d(reduced_feature_depth), nn.BatchNorm2d(reduced_feature_depth), nn.BatchNorm2d(reduced_feature_depth) ])
+
+    def forward(self, x, target_layer):
+
+        layer_num = 0
+        block_idx=0
+        for layer in self.ResNet.children():
+            #print('processing layer number : {}'.format(layer_num))
+            if layer_num in target_layer:
+                for sub_layer in layer.children():
+                    x=sub_layer(x) # we use output of block for BAM
+                    c_att_x=torch.reshape(x, (x.size(0), x.size(1), -1))
+                    c_att_x=torch.mean(c_att_x,2)
+                    c_att_x=self.C_list[block_idx][0](c_att_x)
+                    c_att_x = self.bn_channel[block_idx](c_att_x)
+                    c_att_x=self.relu(c_att_x)
+                    c_att_x=self.C_list[block_idx][1](c_att_x)
+                    c_att_x=c_att_x.unsqueeze(2).unsqueeze(3)
+
+                    s_att_x=x
+                    for i in range(3):
+                        s_att_x=self.S_list[block_idx][i](s_att_x)
+                        s_att_x=self.bn_spatial[block_idx][i](s_att_x)
+                        s_att_x=self.relu(s_att_x)
+                    s_att_x=self.S_list[block_idx][3](s_att_x)
+
+                    att_x=1+self.sigmoid(c_att_x*s_att_x)
+
+                    x=x*att_x
+
+                    block_idx += 1
             else:
                 if(isinstance(layer, nn.Linear)):
                     x=x.squeeze()
