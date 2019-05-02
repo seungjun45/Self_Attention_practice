@@ -71,7 +71,7 @@ def main():
     elif(args.model == 'res34'):
         model = resnet34(pretrained=True)
         target_layer = [4, 5, 6, 7]
-        depth_list = [64, 64,64,128,128,128,128,256,256,256,256,256,512,512,512]
+        depth_list = [64, 64,64,128,128,128,128,256,256,256,256,256, 256, 512,512,512]
 
 
     SE_Adapter=Squeeze_N_Extension(model, C_list_for_SE=depth_list)
@@ -94,9 +94,11 @@ def main():
     i_train = 0
     total_step=len(trainloader)
 
-    save_directory=os.path.join('save_model','SqueezeExcite')
+    save_directory=os.path.join('save_model','SqueezeExcite',args.model)
     if not os.path.exists(save_directory):
         os.makedirs(save_directory) #saving model directory
+
+    print(SE_Adapter)
 
     for epoch in range(args.num_epoch):
         for batch_idx, (inputs, targets) in enumerate(trainloader):
