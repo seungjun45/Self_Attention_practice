@@ -15,7 +15,7 @@ def save_model(path, ResNet, SqueezeExcite, epoch, optimizer=None):
 
     torch.save(model_dict, path)
 
-def save_model(Adapter_path, Adapter, epoch, optimizer=None):
+def load_model(Adapter_path, Adapter, epoch, optimizer=None):
     SqueezeExcite_states=[]
     for SE_param in SqueezeExcite:
         SqueezeExcite_states.append(SE_param[0].state_dict())
