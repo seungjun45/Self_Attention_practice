@@ -379,3 +379,68 @@ class Bottleneck_Attention_M(nn.Module):
                 x=layer(x) # keep forwarding if not target layer to apply self-attention
             layer_num += 1
         return x
+
+
+class C_Block_Attention_M(nn.Module):
+    def __init__(self, ResNet, reduction_ratio=16, C_list_for_SE=[]):
+        super(C_Block_Attention_M,self).__init__()
+
+        self.ResNet=ResNet
+        self.reduction_ratio=reduction_ratio
+        self.relu=nn.ReLU(inplace=True)
+        self.sigmoid=nn.Sigmoid()
+        #self.bn_channel=nn.BatchNorm1d()
+        self.bn_channel=[]
+        self.bn_spatial=[]
+        self.C_list=[] # channel attention
+        self.S_list=[] # spatial attention
+        for featureDepth in C_list_for_SE:
+            reduced_feature_depth=round(featureDepth/reduction_ratio)
+            self.C_list.append( [weight_norm(nn.Linear(featureDepth, reduced_feature_depth ) ), weight_norm(nn.Linear(reduced_feature_depth, featureDepth)) ])
+            self.bn_channel.append(nn.BatchNorm1d(reduced_feature_depth, momentum=0.01))
+            self.S_list.append(nn.Conv2d(2,1,kernel_size=7, padding=3))
+            self.bn_spatial.append(nn.BatchNorm2d(1))
+
+    def forward(self, x, target_layer):
+
+        layer_num = 0
+        block_idx=0
+        for layer in self.ResNet.children():
+            #print('processing layer number : {}'.format(layer_num))
+            if layer_num in target_layer:
+                for sub_layer in layer.children():
+                    x=sub_layer(x) # we use output of block for BAM
+                    c_att_x=torch.reshape(x, (x.size(0), x.size(1), -1))
+                    batch_size=c_att_x.size(0)
+                    c_att_x_avg=torch.mean(c_att_x,2)
+                    c_att_x_max,_=torch.max(c_att_x,2)
+                    c_att_x=torch.cat( (c_att_x_avg, c_att_x_max), dim=0 )
+                    c_att_x=self.C_list[block_idx][0](c_att_x)
+                    c_att_x = self.bn_channel[block_idx](c_att_x)
+                    c_att_x=self.relu(c_att_x)
+                    c_att_x=self.C_list[block_idx][1](c_att_x)
+                    c_att_x=torch.reshape(c_att_x,(batch_size,2,-1))
+                    c_att_x=torch.sum(c_att_x,1)
+                    c_att_x=self.sigmoid(c_att_x)
+                    c_att_x=c_att_x.unsqueeze(2).unsqueeze(3)
+                    x=c_att_x*x
+
+                    s_att_x=x
+                    s_att_x_avg=torch.mean(s_att_x,1)
+                    s_att_x_max,_=torch.max(s_att_x,1)
+                    s_att_x=torch.cat((s_att_x_avg.unsqueeze(1),s_att_x_max.unsqueeze(1)),dim=1)
+                    
+                    s_att_x=self.S_list[block_idx](s_att_x)
+                    s_att_x=self.bn_spatial[block_idx](s_att_x)
+                    s_att_x=self.sigmoid(s_att_x)
+
+                    x=x*s_att_x
+
+                    block_idx += 1
+            else:
+                if(isinstance(layer, nn.Linear)):
+                    x=x.squeeze()
+
+                x=layer(x) # keep forwarding if not target layer to apply self-attention
+            layer_num += 1
+        return x

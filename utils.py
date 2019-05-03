@@ -50,7 +50,38 @@ def save_model_BAM(path, BAM_Adapter, epoch, optimizer=None):
 
     torch.save(model_dict, path)
 
+def save_model_CBAM(path, CBAM_Adapter, epoch, optimizer=None):
+    CA=[]
+    bn1=[]
+    SA=[]
+    bn2=[]
 
+    for CA_param in CBAM_Adapter.C_list:
+        for i in range(2):
+            CA.append(CA_param[i].state_dict())
+
+    for bn1_param in CBAM_Adapter.bn_channel:
+        bn1.append(bn1_param.state_dict())
+
+    for SA_param in CBAM_Adapter.S_list:
+        SA.append(SA_param.state_dict())
+
+    for bn2_param in CBAM_Adapter.bn_spatial:
+        bn2.append(bn2_param.state_dict())
+
+
+    model_dict = {
+            'epoch': epoch,
+            'ResNet_state': CBAM_Adapter.ResNet.state_dict(),
+            'Channel_Attetion': CA,
+            'BN_channel':bn1,
+            'Spatial_Attention' : SA,
+            'BN_spatial':bn2
+        }
+    if optimizer is not None:
+        model_dict['optimizer_state'] = optimizer.state_dict()
+
+    torch.save(model_dict, path)
 
 def load_model(Adapter_path, Adapter, epoch, optimizer=None):
     SqueezeExcite_states=[]
