@@ -418,6 +418,7 @@ class C_Block_Attention_M(nn.Module):
                     c_att_x=self.C_list[block_idx][0](c_att_x)
                     c_att_x = self.bn_channel[block_idx](c_att_x)
                     c_att_x=self.relu(c_att_x)
+                    print('git debug')
                     c_att_x=self.C_list[block_idx][1](c_att_x)
                     c_att_x=torch.reshape(c_att_x,(batch_size,2,-1))
                     c_att_x=torch.sum(c_att_x,1)
