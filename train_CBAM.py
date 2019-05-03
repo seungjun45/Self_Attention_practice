@@ -25,7 +25,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10/100 Training')
 parser.add_argument('--num_epoch', default=300, type=int, metavar='N',
                     help='number of total epochs to run')
-parser.add_argument('--train_batch', default=2048, type=int, metavar='N',
+parser.add_argument('--train_batch', default=4096*2, type=int, metavar='N',
                     help='train batchsize')
 parser.add_argument('--test_batch', default=100, type=int, metavar='N',
                     help='test batchsize')

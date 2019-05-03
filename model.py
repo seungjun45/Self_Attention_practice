@@ -409,7 +409,7 @@ class C_Block_Attention_M(nn.Module):
             #print('processing layer number : {}'.format(layer_num))
             if layer_num in target_layer:
                 for sub_layer in layer.children():
-                    x=sub_layer(x) # we use output of block for BAM
+                    x, identity=sub_layer(x, applySE=True) # we use output of block for BAM
                     c_att_x=torch.reshape(x, (x.size(0), x.size(1), -1))
                     batch_size=c_att_x.size(0)
                     c_att_x_avg=torch.mean(c_att_x,2)
@@ -435,6 +435,9 @@ class C_Block_Attention_M(nn.Module):
                     s_att_x=self.sigmoid(s_att_x)
 
                     x=x*s_att_x
+
+                    x += identity
+                    x = self.relu(x)
 
                     block_idx += 1
             else:
