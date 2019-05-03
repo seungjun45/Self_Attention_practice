@@ -106,7 +106,7 @@ def main():
     i_train = 0
     total_step=len(trainloader)
 
-    save_directory=os.path.join('save_model','Bottleneck_Attention_Module',args.model)
+    save_directory=os.path.join('save_model','C_Block_Attention_Module',args.model)
     if not os.path.exists(save_directory):
         os.makedirs(save_directory) #saving model directory
 
