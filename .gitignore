@@ -6,3 +6,4 @@ save_model/resnet50-pretrained.pth
 data/cifar-100-python
 save_model/Bottleneck_Attention_Module/
 save_model/C_Block_Attention_Module/
+save_model/Baseline/

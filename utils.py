@@ -83,6 +83,17 @@ def save_model_CBAM(path, CBAM_Adapter, epoch, optimizer=None):
 
     torch.save(model_dict, path)
 
+def save_model_BASELINE(path, ResNet, epoch, optimizer=None):
+    model_dict = {
+            'epoch': epoch,
+            'ResNet_state': ResNet.state_dict(),
+        }
+    if optimizer is not None:
+        model_dict['optimizer_state'] = optimizer.state_dict()
+
+    torch.save(model_dict, path)
+
+
 def load_model(Adapter_path, Adapter, epoch, optimizer=None):
     SqueezeExcite_states=[]
     for SE_param in SqueezeExcite:
