@@ -26,7 +26,7 @@ parser.add_argument('--drop', '--dropout', default=0, type=float,
                     metavar='Dropout', help='Dropout ratio')
 parser.add_argument('--log_step', type=int , default=100, help='step size for prining log info')
 parser.add_argument('--model', type=str, default='res50', help='res50 or res34')
-parser.add_argument('--type', type=str, default='SE', help='SE or BAM or CBAM or BASELINE')
+parser.add_argument('--type', type=str, default='SE', help='SE or BAM or CBAM or Baseline')
 parser.add_argument('--model_path', type=str, default='None', help='SE or BAM or CBAM or BASELINE pretrained file path')
 
 args = parser.parse_args()
@@ -127,7 +127,7 @@ def main():
 
         The_Adapter = CBAM_Adapter
 
-    elif(args.type == 'BASELINE'):
+    elif(args.type == 'Baseline'):
         model.to(device)
         model_pre = torch.load(args.model_path)
         model.load_state_dict(model_pre['ResNet_state'])
@@ -149,7 +149,10 @@ def main():
     for batch_idx, (inputs, targets) in enumerate(testloader):
         bar.update(i_test)
         inputs, targets = inputs.to(device), targets.to(device)
-        logits=The_Adapter(inputs, target_layer)
+        if(args.type == 'Baseline'):
+            logits = The_Adapter(inputs)
+        else:
+            logits=The_Adapter(inputs, target_layer)
 
         accr_top1, correct_sample_top1= accuracy(logits, targets)
         num_correct_samples_top1 += correct_sample_top1
