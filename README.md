@@ -1,6 +1,8 @@
 # Self_Attention_practice
 Pytorch implementation of Squeeze_and_Excitation, Bottleneck_Attention_Module, and Convolutional_Block_Attention_Module : for EE898 class, KAIST
 </br></br>
+Checking efficiency of Self-Attention...with Cifar 100
+</br></br>
 # Experiment environment ==> pytorch 0.4 (pytorch 1.0 not supported)
 </br>
 python eval.py --model_path model-299.pth --type SE --model res50</br>
