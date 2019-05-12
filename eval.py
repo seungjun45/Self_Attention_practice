@@ -16,6 +16,7 @@ import pdb
 import progressbar
 import numpy as np
 from utils import load_model, accuracy
+import logging
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -146,6 +147,8 @@ def main():
     num_correct_samples_top1=0
     num_correct_samples_top5=0
 
+    logging.basicConfig(filename='eval.log', level=logging.INFO)
+
     for batch_idx, (inputs, targets) in enumerate(testloader):
         bar.update(i_test)
         inputs, targets = inputs.to(device), targets.to(device)
@@ -166,6 +169,10 @@ def main():
     print('============================================================================================')
     print('Top 1 error : {}'.format((num_samples-num_correct_samples_top1)*100.0/num_samples))
     print('Top 5 error : {}'.format((num_samples - num_correct_samples_top5)*100.0 / num_samples))
+    logging.info('===========================================================================')
+    logging.info('Model : {} || Res-Model : {}'.format(args.type, args.model))
+    logging.info('Top 1 error : {}'.format((num_samples-num_correct_samples_top1)*100.0/num_samples))
+    logging.info('Top 5 error : {}'.format((num_samples - num_correct_samples_top5) * 100.0 / num_samples))
 
 
 if __name__ == '__main__':

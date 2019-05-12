@@ -1,0 +1,120 @@
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 39.69
+INFO:root:Top 5 error : 15.96
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 39.7
+INFO:root:Top 5 error : 15.99
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 39.42
+INFO:root:Top 5 error : 16.26
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 38.52
+INFO:root:Top 5 error : 15.52
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 38.72
+INFO:root:Top 5 error : 15.85
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 38.73
+INFO:root:Top 5 error : 15.46
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 39.02
+INFO:root:Top 5 error : 15.62
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 38.71
+INFO:root:Top 5 error : 15.66
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 38.74
+INFO:root:Top 5 error : 15.57
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res50
+INFO:root:Top 1 error : 39.57
+INFO:root:Top 5 error : 15.77
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.7
+INFO:root:Top 5 error : 18.59
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 42.14
+INFO:root:Top 5 error : 18.34
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 42.11
+INFO:root:Top 5 error : 18.35
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.66
+INFO:root:Top 5 error : 18.45
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 42.36
+INFO:root:Top 5 error : 18.5
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.38
+INFO:root:Top 5 error : 17.94
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.69
+INFO:root:Top 5 error : 17.96
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.38
+INFO:root:Top 5 error : 17.61
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 42.08
+INFO:root:Top 5 error : 18.45
+INFO:root:===========================================================================
+INFO:root:Model : Baseline || Res-Model : res34
+INFO:root:Top 1 error : 41.57
+INFO:root:Top 5 error : 18.12
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 39.12
+INFO:root:Top 5 error : 16.13
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 39.08
+INFO:root:Top 5 error : 15.85
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 39.53
+INFO:root:Top 5 error : 15.84
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 39.23
+INFO:root:Top 5 error : 15.65
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 38.75
+INFO:root:Top 5 error : 15.9
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 38.9
+INFO:root:Top 5 error : 16.15
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 38.58
+INFO:root:Top 5 error : 15.57
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 38.91
+INFO:root:Top 5 error : 15.71
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 39.84
+INFO:root:Top 5 error : 16.53
+INFO:root:===========================================================================
+INFO:root:Model : SE || Res-Model : res50
+INFO:root:Top 1 error : 38.87
+INFO:root:Top 5 error : 15.52
