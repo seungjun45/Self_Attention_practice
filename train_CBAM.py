@@ -111,6 +111,9 @@ def main():
         os.makedirs(save_directory) #saving model directory
 
     #print(BAM_Adapter)
+    tot_params=[param.view(-1).size()[0] for param in params]
+    tot_params=sum(tot_params)
+    print('total number of params : {}'.format(tot_params))
 
     for epoch in range(args.num_epoch):
         for batch_idx, (inputs, targets) in enumerate(trainloader):
